@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/wizact/advent-of-code-2022/file"
 )
 
 func Day1a() {
-	d, e := readFile()
+	d, e := file.ReadFile("./day1/day1a.txt")
 
 	if e != nil {
 		panic(e)

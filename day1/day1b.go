@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/wizact/advent-of-code-2022/file"
 )
 
 type Calorie struct {
@@ -19,7 +21,7 @@ func (p CalorieList) Less(i, j int) bool { return p[i].Value < p[j].Value }
 func (p CalorieList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 func Day1b() {
-	d, e := readFile()
+	d, e := file.ReadFile("./day1/day1a.txt")
 
 	if e != nil {
 		panic(e)

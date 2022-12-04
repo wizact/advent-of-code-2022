@@ -1,10 +1,9 @@
 package main
 
-import (
-	// "github.com/wizact/advent-of-code-2022/day1"
-	// "github.com/wizact/advent-of-code-2022/day2"
-	"github.com/wizact/advent-of-code-2022/day3"
-)
+// "github.com/wizact/advent-of-code-2022/day1"
+// "github.com/wizact/advent-of-code-2022/day2"
+// "github.com/wizact/advent-of-code-2022/day3"
+import "github.com/wizact/advent-of-code-2022/day4"
 
 func main() {
 	// fmt.Println("Day 1...")
@@ -17,5 +16,5 @@ func main() {
 
 	// fmt.Println("Day 3...")
 	// day3.Day3a()
-	day3.Day3b()
+	day4.Day4()
 }

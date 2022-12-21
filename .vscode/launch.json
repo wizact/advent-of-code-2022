@@ -5,11 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach to Process",
+            "name": "Launch Remote",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "/workspaces/advent-of-code-2022"
+        },
+        {
+            "name": "Attach Remote",
             "type": "go",
             "request": "attach",
-            "mode": "local",
-            "processId": 0
+            "mode": "remote",
+            "remotePath": "/workspaces/advent-of-code-2022",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "cwd": "${workspaceFolder}",
+            "trace": "verbose"
         }
     ]
 }

@@ -31,20 +31,25 @@ func trackMovement(ins []Instruction) {
 	tailPosition := Postion{x: 0, y: 0}
 
 	for i := 0; i < len(ins); i++ {
-		move(ins[i], &headPosition, &tailPosition)
-		if !tailAlreadyBeenInPosition(arr, &tailPosition) {
-			arr = append(arr, Postion{x: tailPosition.x, y: tailPosition.y})
-		}
+		arr = move(ins[i], &headPosition, &tailPosition, arr)
 	}
 
-	fmt.Println(len(arr))
+	fmt.Println("Number of unique positions tail has been at least once:", len(arr))
 }
 
-func move(ins Instruction, hp *Postion, tp *Postion) {
-	fmt.Println(ins.direction, ins.steps)
-	adjustPosition(ins, hp)
+func move(ins Instruction, hp *Postion, tp *Postion, arr []Postion) []Postion {
+	return stepThroughInstruction(ins, hp, tp, arr)
+}
 
-	calcTailRelativePostion(hp, tp, ins)
+func stepThroughInstruction(ins Instruction, hp *Postion, tp *Postion, arr []Postion) []Postion {
+	for i := 0; i < ins.steps; i++ {
+		adjustPosition(Instruction{direction: ins.direction, steps: 1}, hp)
+		calcTailRelativePostion(hp, tp, ins)
+		if !tailAlreadyBeenInPosition(arr, tp) {
+			arr = append(arr, Postion{x: tp.x, y: tp.y})
+		}
+	}
+	return arr
 }
 
 func adjustPosition(ins Instruction, p *Postion) {
@@ -68,8 +73,7 @@ func calcTailRelativePostion(hp, tp *Postion, ins Instruction) {
 	absYDistance := math.Abs(float64(yDistance))
 
 	if xDistance == 0 && yDistance == 0 {
-		// No adjustment is required
-		fmt.Println("overlapping")
+		// Overlapping, no adjustment is required
 		return
 	}
 
@@ -77,32 +81,28 @@ func calcTailRelativePostion(hp, tp *Postion, ins Instruction) {
 	touchingY := absYDistance == 1
 
 	if ((touchingX || touchingY) && !(touchingX && touchingY)) && absXDistance < 2 && absYDistance < 2 {
-		// No adjustment is required
-		fmt.Println("touching adjacent", hp.x, hp.y, tp.x, tp.y, xDistance, yDistance, touchingX, touchingY)
+		// Touching adjacent, no adjustment is required
 		return
 	}
 
 	if touchingX && touchingY {
-		// No adjustment is required
-		fmt.Println("touching diagonally", hp.x, hp.y, tp.x, tp.y, xDistance, yDistance, touchingX, touchingY)
+		// Touching diagonally, no adjustment is required
 		return
 	}
 
 	// Tail is two or more steps away from head either up, down, left, or right. Tail must also move x steps in that direction
-	spaceX := absXDistance >= 2 // not on the same col
-	spaceY := absYDistance >= 2 // not on the same row
+	spaceX := absXDistance >= 2 // there is distance between them on x axis.
+	spaceY := absYDistance >= 2 // there is distance between them on y axis.
 
 	if ((spaceX || spaceY) && !(spaceX && spaceY)) && absXDistance == 0 || absYDistance == 0 {
+		// Distant but on the same row or column.
 		// Adjustment is required. Move tail to the same direction as head has moved by x steps
-		fmt.Println("Distant but on the same row or column", hp.x, hp.y, tp.x, tp.y, xDistance, yDistance, spaceX, spaceY)
 		if spaceX {
 			// Adjust X
 			if xDistance > 0 {
 				newTailInstruction.direction = RIGHT
 			} else if xDistance < 0 {
 				newTailInstruction.direction = LEFT
-			} else {
-				panic("should not happen")
 			}
 			newTailInstruction.steps = int(absXDistance) - 1
 
@@ -112,21 +112,14 @@ func calcTailRelativePostion(hp, tp *Postion, ins Instruction) {
 				newTailInstruction.direction = UP
 			} else if yDistance < 0 {
 				newTailInstruction.direction = DOWN
-			} else {
-				panic("should not happen")
 			}
 			newTailInstruction.steps = int(absYDistance) - 1
-		} else {
-			panic("should not happen")
 		}
 		adjustPosition(*newTailInstruction, tp)
-		fmt.Println("New  tail poisition", tp.x, tp.y)
 		return
 	}
 
-	// Adjustment is required. Move tail to the same direction as head has moved by x steps
-	fmt.Println("Distant diagonally", hp.x, hp.y, tp.x, tp.y, xDistance, yDistance, touchingX, touchingY)
-
+	// Distant diagonally. Adjustment is required. Move tail to the same direction as head has moved by x steps
 	if ins.direction == UP || ins.direction == DOWN {
 		newTailInstruction.steps = int(math.Abs(float64(hp.y-tp.y)) - 1)
 		newTailInstruction.direction = ins.direction
@@ -138,9 +131,6 @@ func calcTailRelativePostion(hp, tp *Postion, ins Instruction) {
 	}
 
 	adjustPosition(*newTailInstruction, tp)
-
-	fmt.Println("New  tail poisition", tp.x, tp.y)
-
 }
 
 func tailAlreadyBeenInPosition(arr []Postion, tp *Postion) bool {
